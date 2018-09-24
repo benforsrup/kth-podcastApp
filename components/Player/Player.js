@@ -7,10 +7,9 @@ import {
   Animated,
   PanResponder,
   ScrollView,
-  Image,
-  Slider
+  Image
 } from "react-native";
-import { Icon } from 'react-native-elements'
+import { Icon, Slider } from 'react-native-elements'
 import moment from 'moment'
 import Comment from '../Comments/Comment'
 import * as actions from "../../redux/actions";
@@ -24,35 +23,6 @@ var Sound = require('react-native-sound');
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 const SCREEN_WIDTH = Dimensions.get('window').width
-
-
- function calculateMinutesFromAngle(angle) {
-  return Math.round(angle / (2 * Math.PI / (12 * 12))) * 5;
-  }
-
-  function calculateTimeFromAngle(angle) {
-    const minutes = calculateMinutesFromAngle(angle);
-    const h = Math.floor(minutes / 60);
-    const m = minutes - h * 60;
-
-    return { h, m };
-  }
-
-  function roundAngleToFives(angle) {
-    const fiveMinuteAngle = 2 * Math.PI / 144;
-
-    return Math.round(angle / fiveMinuteAngle) * fiveMinuteAngle;
-  }
-
-  function padMinutes(min) {
-    if (`${min}`.length < 2) {
-      return `0${min}`;
-    }
-
-    return min;
-  }
-
-
 
 
 
@@ -104,9 +74,16 @@ class Player extends Component {
     this.timeInterval = setInterval(() => {this._updateTimeLine()}, 1000 )
   }
 
+  getFormattedTime(seconds){
+    return moment("2015-01-01").startOf('day').seconds(seconds).format('H:mm:ss');
+  }
+  geFormattedDuration(){
+    return moment("2015-01-01").startOf('day').seconds(this.whoosh.getDuration()).format('H:mm:ss');
+  }
+
   _updateTimeLine(){
     this.whoosh.getCurrentTime((seconds) => {
-      let formattedTime = moment("2015-01-01").startOf('day').seconds(seconds+1).format('H:mm:ss');
+      let formattedTime = moment("2015-01-01").startOf('day').seconds(seconds).format('H:mm:ss');
       let formattedDuration = moment("2015-01-01").startOf('day').seconds(this.whoosh.getDuration()).format('H:mm:ss');
       let angle  = (360*(seconds+1))/this.whoosh.getDuration()
       let timePercentage = seconds*100/this.whoosh.getDuration()
@@ -114,7 +91,7 @@ class Player extends Component {
       
       this.setState({
         angle: angle, 
-        timeSeconds: Math.round(seconds+1), 
+        timeSeconds: Math.round(seconds), 
         timeFormatted:formattedTime + " / " + formattedDuration,
         timePercentage: timePercentage
        })
@@ -242,17 +219,23 @@ class Player extends Component {
            {this.state.canScrollUp && <Animated.View style={{ height: animatedBottomTimelineHeight, 
               width: SCREEN_WIDTH, 
               alignItems: 'center', 
-              position:'absolute',
-              top:-20,
-              zIndex:9999}}>
+              flexDirection:'row',
+              justifyContent:'center',
+              height:40,
+ 
+             
+              }}>
+              <Text> {this.getFormattedTime(this.state.timeSeconds)}</Text>
                     <Slider
-                      style={{ width: SCREEN_WIDTH }}
+                      style={{ width: SCREEN_WIDTH-120, marginLeft:5, marginRight:5 }}
                       step={0.1}
-                      minimumValue={18}
-                      maximumValue={71}
+                      minimumValue={0}
+                      maximumValue={100}
+                      thumbStyle={{width:15, height:15}}
                       value={this.state.timePercentage}
                       onValueChange={(value)=>this._updateBottomTimeValue(value)}
                     />
+                    <Text>{this.geFormattedDuration()}</Text>
                   </Animated.View>
                   
            }
@@ -260,7 +243,7 @@ class Player extends Component {
          
             <Animated.View
               
-              style={{ height: animatedHeaderHeight, flexDirection: 'row', alignItems: 'center' }}>
+              style={{ height: animatedHeaderHeight-animatedBottomTimelineHeight, flexDirection: 'row', alignItems:'center' }}>
               
                 <Animated.View style={{ height: animatedImageHeight, width: animatedImageWidth, marginLeft: animatedImageMarginLeft }}>
                 
