@@ -49,7 +49,6 @@ class Comments extends Component {
         const { commentList, player  } = this.props
         const topComment = commentList.comments.filter(comment =>   Math.abs(player.currentTime - comment.time)<11)|| ""
 
-        console.log(topComment,player.currentTime)
         return (
             <View style={styles.commentContainer}>
                 <View style={styles.container}>

@@ -64,6 +64,7 @@ class Player extends Component {
       canScrollUp :false,
       angle: 0,
       timeSeconds:0,
+      timePercentage:0,
       timeFormatted:"",
       isPlaying: false
     }
@@ -108,8 +109,15 @@ class Player extends Component {
       let formattedTime = moment("2015-01-01").startOf('day').seconds(seconds+1).format('H:mm:ss');
       let formattedDuration = moment("2015-01-01").startOf('day').seconds(this.whoosh.getDuration()).format('H:mm:ss');
       let angle  = (360*(seconds+1))/this.whoosh.getDuration()
+      let timePercentage = seconds*100/this.whoosh.getDuration()
       this.props.actions.setCurrentTime(seconds)
-      this.setState({angle: angle, timeSeconds: Math.round(seconds+1), timeFormatted:formattedTime + " / " + formattedDuration })
+      
+      this.setState({
+        angle: angle, 
+        timeSeconds: Math.round(seconds+1), 
+        timeFormatted:formattedTime + " / " + formattedDuration,
+        timePercentage: timePercentage
+       })
     });
   }
 
@@ -133,17 +141,25 @@ class Player extends Component {
       this.setState({canScrollUp:true})
     }
     
-    console.log("called")
   }
 
   _updateTimeValue (value){
       let time  = (value*this.whoosh.getDuration())/360  
-      
-
-      this.setState({angle: value, duration: Math.round(time)})
-      
+      let timePercentage = (value*100)/360
+     
+      this.setState({angle: value, duration: Math.round(time), timePercentage: timePercentage})
       this.whoosh.setCurrentTime(time);
-      
+  }
+  _updateBottomTimeValue(value){
+    console.log(value)
+    let angle = (value/100)*360
+    let time = (value/100)*this.whoosh.getDuration()
+    this.setState({
+      angle: angle,
+      duration: Math.round(time),
+      timePercentage: value
+    })
+    this.whoosh.setCurrentTime(time)
   }
 
  
@@ -194,6 +210,12 @@ class Player extends Component {
       extrapolate:"clamp"
     })
 
+    animatedBottomTimelineHeight = this.animation.y.interpolate({
+      inputRange:[0, SCREEN_HEIGHT],
+      outputRange:[0, 40],
+      extrapolate:"clamp"
+    })
+
 
     const { commentList } = this.props
     const topComment = commentList.comments.filter(comment =>   comment.time + 10 > this.state.timeSeconds).slice(1)|| ""
@@ -207,23 +229,41 @@ class Player extends Component {
         
         <Animated.View 
           style={[animatedHeight, { position: 'absolute', left: 0, right: 0, zIndex: 10, backgroundColor: 'white', height: SCREEN_HEIGHT,
-          shadowColor: "#000",
-          shadowOffset: {
-          width: 0,
-          height: 8,
-          },
-          shadowOpacity: 0.6,
-          shadowRadius: 11.14,
-
-          elevation: 8,
-        }]}
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 8,
+            },
+            shadowOpacity: 0.6,
+            shadowRadius: 11.14,
+            elevation: 8,
+          }]}
         >
+           {this.state.canScrollUp && <Animated.View style={{ height: animatedBottomTimelineHeight, 
+              width: SCREEN_WIDTH, 
+              alignItems: 'center', 
+              position:'absolute',
+              top:-20,
+              zIndex:9999}}>
+                    <Slider
+                      style={{ width: SCREEN_WIDTH }}
+                      step={0.1}
+                      minimumValue={18}
+                      maximumValue={71}
+                      value={this.state.timePercentage}
+                      onValueChange={(value)=>this._updateBottomTimeValue(value)}
+                    />
+                  </Animated.View>
+                  
+           }
+       
          
             <Animated.View
               
               style={{ height: animatedHeaderHeight, flexDirection: 'row', alignItems: 'center' }}>
               
                 <Animated.View style={{ height: animatedImageHeight, width: animatedImageWidth, marginLeft: animatedImageMarginLeft }}>
+                
                   <Image  style={{ flex: 1, width:null, height: null, opacity:0.7 }}
                     source={require('../../assets/Hotelcalifornia.jpg')}
                     />
@@ -232,6 +272,7 @@ class Player extends Component {
                    </Animated.View> 
 
                 </Animated.View>
+                
                 <Animated.Text onPress={() => this.onTouchPlayer()} style={{ opacity: animatedSongTitleOpacity, fontSize: 18, paddingLeft: 10 }}>Hotel California(Live)</Animated.Text>
                 <Animated.View style={{ opacity: animatedSongTitleOpacity, flex: 1, flexDirection: 'row', justifyContent: 'space-around' }}>
                     {this.state.isPlaying ? 
