@@ -51,7 +51,7 @@ class Comments extends Component {
                         <Icon name="thumb-down" type="materialicon" iconStyle={{fontSize:20}} /> 
                     </View>
                     <Icon name="chevron-down" type="entypo" />
-                    <View><Text style={{marginRight:50, fontWeight:'700', fontSize:15, color:'gray'}}> Answer</Text></View>
+                    <View><Text style={{marginRight:50, fontWeight:'700', fontSize:15, color:'gray'}}> Reply</Text></View>
                 </View>
 
             </View>

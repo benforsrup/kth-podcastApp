@@ -178,9 +178,11 @@ class Player extends Component {
 
     animatedBackgroundColor = this.animation.y.interpolate({
       inputRange: [0, SCREEN_HEIGHT - 40],
-      outputRange: ['rgba(0,0,0,0.5)', 'white'],
+      outputRange: ['white', 'gray'],
       extrapolate: "clamp"
     })
+
+
     animatedImageWidth = this.animation.y.interpolate({
       inputRange:[0, SCREEN_HEIGHT ],
       outputRange:[SCREEN_WIDTH+25, 20],
@@ -196,13 +198,12 @@ class Player extends Component {
 
     const { commentList } = this.props
     const topComment = commentList.comments.filter(comment =>   comment.time + 10 > this.state.timeSeconds).slice(1)|| ""
-    
     return (
 
-        <View >
+        <View>
           
             
-      <Animated.View style={{ flex: 1, backgroundColor: animatedBackgroundColor }}>
+        <Animated.View style={{ flex: 1}}>
         
         <Animated.View 
           style={[animatedHeight, { position: 'absolute', left: 0, right: 0, zIndex: 10, backgroundColor: 'white', height: SCREEN_HEIGHT,

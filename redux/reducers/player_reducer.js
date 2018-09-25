@@ -1,8 +1,9 @@
-import { SET_CURRENT_TIME} from '../constants/ActionTypes'
+import { SET_CURRENT_TIME, TOGGLE_MINIMIZED} from '../constants/ActionTypes'
 
 const initialState = {
   title:"",
-  currentTime:0
+  currentTime:0,
+  isMinimized:""
 }
 
 export default function player(state = initialState, action) {
@@ -10,6 +11,10 @@ export default function player(state = initialState, action) {
     case SET_CURRENT_TIME:
       return {
         ...state, currentTime: action.time
+      }
+    case TOGGLE_MINIMIZED:
+      return {
+        ...state, isMinimized: action.color
       }
 
     default:

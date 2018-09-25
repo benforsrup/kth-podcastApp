@@ -17,7 +17,6 @@ class PodCastView extends Component {
   render() {
     return (
         <View >      
-          
           <Player />
           <Comments />
         </View>

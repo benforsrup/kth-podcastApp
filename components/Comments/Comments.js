@@ -11,6 +11,7 @@ import {
 import Comment from './Comment'
 import * as actions from "../../redux/actions";
 import { bindActionCreators } from "redux";
+import { Icon } from 'react-native-elements' 
 
 import { connect } from 'react-redux'
 
@@ -48,10 +49,12 @@ class Comments extends Component {
     render() {
         const { commentList, player  } = this.props
         const topComment = commentList.comments.filter(comment =>   Math.abs(player.currentTime - comment.time)<11)|| ""
-
+        
         return (
             <View style={styles.commentContainer}>
+            
                 <View style={styles.container}>
+                { topComment.length > 0 ?
                 <ScrollView
                     scrollEnabled={true}
                     scrollEventThrottle={16}>
@@ -62,7 +65,20 @@ class Comments extends Component {
                         renderItem={this._renderItem}
                     />
                   </ScrollView>
+                  :
+                  <View>
+                  <Icon
+                        iconStyle={{fontSize:40}}
+                      name='circle-with-plus'
+                      type='entypo'
+                      color='#517fa4'
+                  />
+                  <Text> Add comment!</Text>
+                  </View>
+
+              }
                 </View> 
+            
                 
             </View> 
         );
@@ -95,12 +111,10 @@ const styles = StyleSheet.create({
     commentContainer :{
       width:SCREEN_WIDTH,
       height:SCREEN_HEIGHT-80,
-      backgroundColor:'white',
       zIndex:-1  
     },
     plusButton: {
         textAlign:'right',
-
         marginRight:10,
         marginBottom:10
     }
