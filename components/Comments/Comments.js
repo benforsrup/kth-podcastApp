@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       marginTop:30,
-      borderTopWidth:1
+      borderTopWidth:1,
+      borderTopColor:'gray',
     },
     commentContainer :{
       width:SCREEN_WIDTH,
